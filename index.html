@@ -41,9 +41,16 @@
     }
 
     .mode-container {
+      display: flex;
+      flex-direction: column;
       margin: 15px auto;
-      width: fit-content;
+      width: max-content;
       font-size: 20px;
+      gap: 5px;
+    }
+
+    button {
+      font-size: 26px;
     }
   </style>
 </head>
@@ -52,18 +59,21 @@
   <h1 id="steps">Steps count: 0</h1>
   <div class="container"></div>
   <div class="mode-container">
-    <label>
-      <input type="radio" name="mode" value="x3" checked />
-      3 X 3
-    </label>
-    <label>
-      <input type="radio" name="mode" value="x4" />
-      4 X 4
-    </label>
-    <label>
-      <input type="radio" name="mode" value="x5" />
-      5 X 5
-    </label>
+    <div>
+      <label>
+        <input type="radio" name="mode" value="3" checked />
+        3 X 3
+      </label>
+      <label>
+        <input type="radio" name="mode" value="4" />
+        4 X 4
+      </label>
+      <label>
+        <input type="radio" name="mode" value="5" />
+        5 X 5
+      </label>
+    </div>
+    <button onclick="createGame()">RESET</button>
   </div>
 
   <script>
@@ -71,32 +81,44 @@
     const $$ = (s) => document.querySelectorAll(s);
 
     const container = $('.container')
-    const SIZE = 3
-    const map = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
+    let SIZE = 3
     let steps = 0
     let blocks4 = []
     let isMoving = false
+    let matrix = []
+    let blocks = []
 
-    const matrix = generateRandom()
-
-    createBlocks()
-    const blocks = $$('.block')
-    calc()
+    createGame()
 
     window.addEventListener('keydown', (e) => {
-      const bName = blocks4[map[e.key]]
+      const keyMap = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
+
+      const bName = blocks4[keyMap[e.key]]
       if (bName) $('.' + bName).click()
     })
 
     $('.mode-container').addEventListener('change', (e) => {
-      console.log(e.target.value);
+      SIZE = +e.target.value;
+      createGame()
     })
 
-    blocks.forEach(block => {
-      block.addEventListener('click', move)
-      block.addEventListener('dragend', move)
-    })
 
+    function createGame() {
+      console.log(8);
+      container.innerHTML = ''
+      steps = 0
+      $('#steps').innerHTML = 'Steps count: ' + steps
+      matrix = generateRandom()
+
+      createBlocks()
+      blocks = $$('.block')
+      calc()
+
+      blocks.forEach(block => {
+        block.addEventListener('click', move)
+        block.addEventListener('dragend', move)
+      })
+    }
 
     function generateRandom(size) {
       const arr = ['.'], res = []
@@ -124,7 +146,6 @@
         block.innerText = i
         container.appendChild(block)
       }
-      container.append(document.createElement('nav'))
     }
 
     function getPos(val) {
@@ -140,8 +161,7 @@
       })
       container.style.gridTemplateAreas = '"' + matrix.map(r => r.join(' ')).join('" "') + '"'
 
-      // find empty position
-      const [y, x] = getPos('.')
+      const [y, x] = getPos('.') // find empty position
 
       // get neighbors
       const m = matrix
