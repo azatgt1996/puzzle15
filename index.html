@@ -13,7 +13,7 @@
     .container {
       display: grid;
       border: 2px solid grey;
-      border-radius: 12px;
+      border-radius: 26px;
       padding: 10px;
       gap: 10px;
       margin: auto;
@@ -23,7 +23,7 @@
 
     .block {
       border: 2px solid skyblue;
-      border-radius: 12px;
+      border-radius: 20px;
       width: 100px;
       height: 100px;
       text-align: center;
@@ -35,9 +35,10 @@
 
     .draggable {}
 
-    #steps {
+    #steps, #timer {
       text-align: center;
       color: grey;
+      margin: 5px;
     }
 
     .mode-container {
@@ -57,6 +58,7 @@
 
 <body>
   <h1 id="steps">Steps count: 0</h1>
+  <h4 id="timer">0 s</h4>
   <div class="container"></div>
   <div class="mode-container">
     <div>
@@ -87,24 +89,35 @@
     let isMoving = false
     let matrix = []
     let blocks = []
+    let seconds = 0
+    let timer
 
     createGame()
+    addEvents()
 
-    window.addEventListener('keydown', (e) => {
+
+    function addEvents() {
       const keyMap = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
+      window.addEventListener('keydown', (e) => {
+        const bName = blocks4[keyMap[e.key]]
+        if (bName) $('.' + bName).click()
+      })
 
-      const bName = blocks4[keyMap[e.key]]
-      if (bName) $('.' + bName).click()
-    })
-
-    $('.mode-container').addEventListener('change', (e) => {
-      SIZE = +e.target.value;
-      createGame()
-    })
-
+      $('.mode-container').addEventListener('change', (e) => {
+        SIZE = +e.target.value;
+        createGame()
+      })
+    }
 
     function createGame() {
-      console.log(8);
+      clearInterval(timer)
+      seconds = 0
+      $('#timer').innerText = seconds + ' s'
+      timer = setInterval(() => {
+        seconds++
+        $('#timer').innerText = seconds + ' s'
+      }, 1000)
+
       container.innerHTML = ''
       steps = 0
       $('#steps').innerHTML = 'Steps count: ' + steps
