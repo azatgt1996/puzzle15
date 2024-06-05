@@ -76,6 +76,7 @@
       </label>
     </div>
     <button onclick="createGame()">RESET</button>
+    <button id="cancel" onclick="cancelStep()" disabled>CANCEL</button>
   </div>
 
   <script>
@@ -87,14 +88,25 @@
     let steps = 0
     let blocks4 = []
     let isMoving = false
+    let isCanceling = false
     let matrix = []
     let blocks = []
     let seconds = 0
     let timer
+    const lastSteps = []
 
     createGame()
     addEvents()
 
+
+    function cancelStep() {
+      const lastStep = lastSteps.pop()
+      console.log(lastSteps.length);
+      if (lastSteps.length === 0) $('#cancel').disabled = true
+      steps -= 2
+      isCanceling = true
+      $('.' + lastStep).click()
+    }
 
     function addEvents() {
       const keyMap = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
@@ -109,7 +121,7 @@
       })
     }
 
-    function createGame() {
+    function resetTimer() {
       clearInterval(timer)
       seconds = 0
       $('#timer').innerText = seconds + ' s'
@@ -117,6 +129,10 @@
         seconds++
         $('#timer').innerText = seconds + ' s'
       }, 1000)
+    }
+
+    function createGame() {
+      resetTimer()
 
       container.innerHTML = ''
       steps = 0
@@ -194,6 +210,10 @@
 
       isMoving = true
       const blockName = 'b' + e.srcElement.innerHTML
+      if (!isCanceling) {
+        lastSteps.push(blockName)
+        $('#cancel').disabled = false
+      }
       steps++
       $('#steps').innerHTML = 'Steps count: ' + steps
 
@@ -205,6 +225,7 @@
       matrix[y][x] = '.';
       calc()
       isMoving = false
+      isCanceling = false
     }
   </script>
 </body>
