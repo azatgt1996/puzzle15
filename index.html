@@ -39,30 +39,83 @@
       text-align: center;
       color: grey;
     }
+
+    .mode-container {
+      margin: 15px auto;
+      width: fit-content;
+      font-size: 20px;
+    }
   </style>
 </head>
 
 <body>
   <h1 id="steps">Steps count: 0</h1>
   <div class="container"></div>
+  <div class="mode-container">
+    <label>
+      <input type="radio" name="mode" value="x3" checked />
+      3 X 3
+    </label>
+    <label>
+      <input type="radio" name="mode" value="x4" />
+      4 X 4
+    </label>
+    <label>
+      <input type="radio" name="mode" value="x5" />
+      5 X 5
+    </label>
+  </div>
 
   <script>
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
     const container = $('.container')
-    const SIZE = 4
+    const SIZE = 3
+    const map = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
     let steps = 0
     let blocks4 = []
+    let isMoving = false
 
-    const matrix = [ //todo random initialize
-      ['b3', 'b2', 'b12', 'b9'],
-      ['b4', 'b1', 'b14', 'b11'],
-      ['b6', 'b8', 'b7', 'b10'],
-      ['b15', 'b13', 'b5', '.'],
-    ]
+    const matrix = generateRandom()
 
-    const createBlocks = () => {
+    createBlocks()
+    const blocks = $$('.block')
+    calc()
+
+    window.addEventListener('keydown', (e) => {
+      const bName = blocks4[map[e.key]]
+      if (bName) $('.' + bName).click()
+    })
+
+    $('.mode-container').addEventListener('change', (e) => {
+      console.log(e.target.value);
+    })
+
+    blocks.forEach(block => {
+      block.addEventListener('click', move)
+      block.addEventListener('dragend', move)
+    })
+
+
+    function generateRandom(size) {
+      const arr = ['.'], res = []
+      while (arr.length !== SIZE ** 2) {
+        const random = 'b' + (~~(Math.random() * (SIZE ** 2 - 1)) + 1)
+        if (!arr.includes(random)) arr.push(random)
+      }
+
+      for (let i = 0; i < SIZE; i++) {
+        const temp = []
+        for (let j = 0; j < SIZE; j++)
+          temp.push(arr.pop())
+        res.push(temp)
+      }
+
+      return res
+    }
+
+    function createBlocks() {
       for (let i = 1; i < SIZE ** 2; i++) {
         const block = document.createElement('div')
         const blockName = 'b' + i
@@ -74,13 +127,13 @@
       container.append(document.createElement('nav'))
     }
 
-    const getPos = (val) => {
+    function getPos(val) {
       for (let i = 0; i < SIZE; i++)
         for (let j = 0; j < SIZE; j++)
           if (matrix[i][j] === val) return [i, j]
     }
 
-    const calc = () => {
+    function calc() {
       blocks.forEach(block => {
         block.classList.remove('draggable')
         block.setAttribute('draggable', false)
@@ -103,12 +156,7 @@
       })
     }
 
-    createBlocks()
-    const blocks = $$('.block')
-    calc()
-
-    let isMoving = false
-    const move = (e) => {
+    function move(e) {
       if (isMoving || !e.srcElement.classList.contains('draggable')) return
 
       isMoving = true
@@ -125,17 +173,6 @@
       calc()
       isMoving = false
     }
-
-    const map = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
-    window.addEventListener('keydown', (e) => {
-      const bName = blocks4[map[e.key]]
-      if (bName) $('.' + bName).click()
-    })
-
-    blocks.forEach(block => {
-      block.addEventListener('click', move)
-      block.addEventListener('dragend', move)
-    })
   </script>
 </body>
 
