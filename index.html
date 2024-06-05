@@ -2,143 +2,141 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>game 15</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        .container {
-            display: grid;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puzzle 15</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
 
-            grid-template-areas:
-                'b1 b2 b3 b4'
-                'b5 b6 b7 b8'
-                'b9 b10 b11 b12'
-                'b13 b14 b15 .';
-            border: 2px solid gray;
-            border-radius: 12px;
-            padding: 10px;
-            gap: 10px;
-            margin: auto;
-            width: min-content;
-        }
+    .container {
+      display: grid;
+      border: 2px solid grey;
+      border-radius: 12px;
+      padding: 10px;
+      gap: 10px;
+      margin: auto;
+      width: min-content;
+      transition: 3000ms;
+    }
 
-        .block {
-            border: 2px solid skyblue;
-            border-radius: 12px;
-            width: 100px;
-            height: 100px;
-            text-align: center;
-            align-content: center;
-            font-size: 50px;
-            color: lightgray;
-            user-select: none;
-        }
+    .block {
+      border: 2px solid skyblue;
+      border-radius: 12px;
+      width: 100px;
+      height: 100px;
+      text-align: center;
+      align-content: center;
+      font-size: 50px;
+      color: lightgray;
+      user-select: none;
+    }
 
-        .clickable {
-            font-size: 58px;
-        }
+    .draggable {}
 
-        .b1 { grid-area: b1; }
-        .b2 { grid-area: b2; }
-        .b3 { grid-area: b3; }
-        .b4 { grid-area: b4; }
-        .b5 { grid-area: b5; }
-        .b6 { grid-area: b6; }
-        .b7 { grid-area: b7; }
-        .b8 { grid-area: b8; }
-        .b9 { grid-area: b9; }
-        .b10 { grid-area: b10; }
-        .b11 { grid-area: b11; }
-        .b12 { grid-area: b12; }
-        .b13 { grid-area: b13; }
-        .b14 { grid-area: b14; }
-        .b15 { grid-area: b15; }
-
-        #steps {
-            text-align: center;
-            color: gray;
-        }
-    </style>
+    #steps {
+      text-align: center;
+      color: grey;
+    }
+  </style>
 </head>
 
 <body>
-    <h1 id="steps">Your steps: 0</h1>
-    <div class="container">
-        <div class="block b1">1</div>
-        <div class="block b2">2</div>
-        <div class="block b3">3</div>
-        <div class="block b4">4</div>
-        <div class="block b5">5</div>
-        <div class="block b6">6</div>
-        <div class="block b7">7</div>
-        <div class="block b8">8</div>
-        <div class="block b9">9</div>
-        <div class="block b10">10</div>
-        <div class="block b11">11</div>
-        <div class="block b12">12</div>
-        <div class="block b13">13</div>
-        <div class="block b14">14</div>
-        <div class="block b15">15</div>
-    </div>
+  <h1 id="steps">Steps count: 0</h1>
+  <div class="container"></div>
 
-    <script>
-        const blocks = document.querySelectorAll('.block')
-        const container = document.querySelector('.container')
-        const SIZE = 4
-        let steps = 0
-        const matrix = [ //todo random initialize
-            [ 'b4', 'b2', 'b12', 'b9' ],
-            [ 'b1', 'b3', '.', 'b11' ],
-            [ 'b6', 'b8', 'b7', 'b10' ],
-            [ 'b15', 'b13', 'b5', 'b14' ],
-        ]
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
 
-        const getPos = (val) => {
-            for (let i = 0; i < SIZE; i++)
-                for (let j = 0; j < SIZE; j++)
-                    if (matrix[i][j] === val) return [i, j]
-        }
+    const container = $('.container')
+    const SIZE = 4
+    let steps = 0
+    let blocks4 = []
 
-        const calc = () => {
-            blocks.forEach(block => block.classList.remove('clickable'))
-            container.style.gridTemplateAreas = '"' + matrix.map(r => r.join(' ')).join('" "') + '"'
-            
-            // find empty position
-            const [y, x] = getPos('.')
-            
-            // get neighbors
-            const m = matrix
-            const neighbors = [ m[y-1]?.[x], m[y]?.[x+1], m[y+1]?.[x], m[y]?.[x-1] ].filter(Boolean)
+    const matrix = [ //todo random initialize
+      ['b3', 'b2', 'b12', 'b9'],
+      ['b4', 'b1', 'b14', 'b11'],
+      ['b6', 'b8', 'b7', 'b10'],
+      ['b15', 'b13', 'b5', '.'],
+    ]
 
-            // set clickable class
-            neighbors.forEach(bNum => {
-                document.querySelector('.' + bNum).classList.add('clickable')
-            })
-        }
+    const createBlocks = () => {
+      for (let i = 1; i < SIZE ** 2; i++) {
+        const block = document.createElement('div')
+        const blockName = 'b' + i
+        block.classList.add('block', blockName)
+        block.style.gridArea = blockName
+        block.innerText = i
+        container.appendChild(block)
+      }
+      container.append(document.createElement('nav'))
+    }
 
-        calc()
+    const getPos = (val) => {
+      for (let i = 0; i < SIZE; i++)
+        for (let j = 0; j < SIZE; j++)
+          if (matrix[i][j] === val) return [i, j]
+    }
 
-        blocks.forEach(block => {
-            block.addEventListener('click', (e) => {
-                if (e.srcElement.classList.contains('clickable')) {
-                    const blockName = 'b' + e.srcElement.innerHTML
-                    steps++
-                    document.querySelector('#steps').innerHTML = 'Yours steps: ' + steps
+    const calc = () => {
+      blocks.forEach(block => {
+        block.classList.remove('draggable')
+        block.setAttribute('draggable', false)
+      })
+      container.style.gridTemplateAreas = '"' + matrix.map(r => r.join(' ')).join('" "') + '"'
 
-                    let [y, x] = getPos(blockName);
-                    matrix[y][x] = 'temp';
-                    [y, x] = getPos('.');
-                    matrix[y][x] = blockName;
-                    [y, x] = getPos('temp');
-                    matrix[y][x] = '.';
-                    calc()
-                }
-            })
-        })
-    </script>
+      // find empty position
+      const [y, x] = getPos('.')
+
+      // get neighbors
+      const m = matrix
+      blocks4 = [m[y - 1]?.[x], m[y]?.[x + 1], m[y + 1]?.[x], m[y]?.[x - 1]]
+      const neighbors = blocks4.filter(Boolean)
+
+      // set draggable class
+      neighbors.forEach(bNum => {
+        const block = $('.' + bNum)
+        block.classList.add('draggable')
+        block.setAttribute('draggable', true)
+      })
+    }
+
+    createBlocks()
+    const blocks = $$('.block')
+    calc()
+
+    let isMoving = false
+    const move = (e) => {
+      if (isMoving || !e.srcElement.classList.contains('draggable')) return
+
+      isMoving = true
+      const blockName = 'b' + e.srcElement.innerHTML
+      steps++
+      $('#steps').innerHTML = 'Steps count: ' + steps
+
+      let [y, x] = getPos(blockName);
+      matrix[y][x] = 'temp';
+      [y, x] = getPos('.');
+      matrix[y][x] = blockName;
+      [y, x] = getPos('temp');
+      matrix[y][x] = '.';
+      calc()
+      isMoving = false
+    }
+
+    const map = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
+    window.addEventListener('keydown', (e) => {
+      const bName = blocks4[map[e.key]]
+      if (bName) $('.' + bName).click()
+    })
+
+    blocks.forEach(block => {
+      block.addEventListener('click', move)
+      block.addEventListener('dragend', move)
+    })
+  </script>
 </body>
 
 </html>
