@@ -101,7 +101,6 @@
 
     function cancelStep() {
       const lastStep = lastSteps.pop()
-      console.log(lastSteps.length);
       if (lastSteps.length === 0) $('#cancel').disabled = true
       steps -= 2
       isCanceling = true
@@ -133,6 +132,9 @@
 
     function createGame() {
       resetTimer()
+
+      lastSteps.length = 0
+      $('#cancel').disabled = true
 
       container.innerHTML = ''
       steps = 0
