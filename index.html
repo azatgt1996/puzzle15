@@ -122,22 +122,46 @@
       })
     }
 
-    function resetTimer() {
-      clearInterval(timer)
-      seconds = 0
-      $('#timer').innerText = seconds + ' s'
-      timer = setInterval(() => {
-        seconds++
-        $('#timer').innerText = seconds + ' s'
-      }, 1000)
-    }
-
     function createGame() {
       function createBlocks() {
         let blocksHTML = ''
         for (let i = 1; i < SIZE ** 2; i++)
           blocksHTML += `<div class="block b${i}" style="grid-area: b${i}">${i}</div>`
         container.innerHTML = blocksHTML
+      }
+
+      function resetTimer() {
+        clearInterval(timer)
+        seconds = 0
+        $('#timer').innerText = seconds + ' s'
+        timer = setInterval(() => {
+          seconds++
+          $('#timer').innerText = seconds + ' s'
+        }, 1000)
+      }
+
+      function generateRandom() {
+        const arr = ['.'], res = []
+        while (arr.length !== SIZE ** 2) {
+          const random = 'b' + (~~(Math.random() * (SIZE ** 2 - 1)) + 1)
+          if (!arr.includes(random)) arr.push(random)
+        }
+
+        let cnt = 1
+        solved = []
+        for (let i = 0; i < SIZE; i++) {
+          const temp = [], tmp = []
+          for (let j = 0; j < SIZE; j++) {
+            temp.push(arr.pop())
+            tmp.push('b' + cnt)
+            cnt++
+          }
+          solved.push(tmp)
+          res.push(temp)
+        }
+        solved[SIZE - 1][SIZE - 1] = '.'
+
+        return res
       }
 
       resetTimer()
@@ -157,30 +181,6 @@
         block.addEventListener('click', move)
         block.addEventListener('dragend', move)
       })
-    }
-
-    function generateRandom() {
-      const arr = ['.'], res = []
-      while (arr.length !== SIZE ** 2) {
-        const random = 'b' + (~~(Math.random() * (SIZE ** 2 - 1)) + 1)
-        if (!arr.includes(random)) arr.push(random)
-      }
-
-      let cnt = 1
-      solved = []
-      for (let i = 0; i < SIZE; i++) {
-        const temp = [], tmp = []
-        for (let j = 0; j < SIZE; j++) {
-          temp.push(arr.pop())
-          tmp.push('b' + cnt)
-          cnt++
-        }
-        solved.push(tmp)
-        res.push(temp)
-      }
-      solved[SIZE - 1][SIZE - 1] = '.'
-
-      return res
     }
 
     function getPos(val) {
