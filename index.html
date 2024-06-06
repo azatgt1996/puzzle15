@@ -8,6 +8,7 @@
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
+      user-select: none;
     }
 
     .container {
@@ -18,7 +19,6 @@
       gap: 10px;
       margin: auto;
       width: min-content;
-      transition: 3000ms;
     }
 
     .block {
@@ -30,7 +30,11 @@
       align-content: center;
       font-size: 50px;
       color: lightgray;
-      user-select: none;
+      cursor: pointer;
+    }
+
+    .block:hover {
+      background-color: #fafafa;
     }
 
     #steps,
@@ -40,7 +44,7 @@
       margin: 5px;
     }
 
-    .mode-container {
+    footer {
       display: flex;
       flex-direction: column;
       margin: 15px auto;
@@ -49,10 +53,16 @@
       gap: 5px;
     }
 
+    .mode-container label, .mode-container input {
+      margin: 0 7px;
+      cursor: pointer;
+    }
+
     button {
       font-size: 26px;
       margin-top: 10px;
       border-radius: 10px;
+      border-color: gray;
     }
   </style>
 </head>
@@ -61,31 +71,29 @@
   <h1 id="steps">Steps count: 0</h1>
   <h4 id="timer">0 s</h4>
   <div class="container"></div>
-  <div class="mode-container">
-    <div>
+  <footer>
+    <div class="mode-container">
       <label>
-        <input type="radio" name="mode" value="3" checked />
-        3 X 3
+        <input type="radio" name="mode" value="3" />3 × 3
       </label>
       <label>
-        <input type="radio" name="mode" value="4" />
-        4 X 4
+        <input type="radio" name="mode" value="4" />4 × 4
       </label>
       <label>
-        <input type="radio" name="mode" value="5" />
-        5 X 5
+        <input type="radio" name="mode" value="5" />5 × 5
       </label>
     </div>
     <button onclick="createGame()">RESET</button>
     <button id="cancel" onclick="cancelStep()" disabled>CANCEL</button>
-  </div>
+  </footer>
 
   <script>
     const $ = (s) => document.querySelector(s);
     const $$ = (s) => document.querySelectorAll(s);
 
     const container = $('.container')
-    let SIZE = 3
+    let SIZE = localStorage.getItem('SIZE') ?? 4
+    $(`.mode-container input[value="${SIZE}"]`).checked = true
     let steps = 0
     let blocks4 = []
     let isMoving = false
@@ -118,6 +126,7 @@
 
       $('.mode-container').addEventListener('change', (e) => {
         SIZE = +e.target.value;
+        localStorage.setItem('SIZE', SIZE)
         createGame()
       })
     }
