@@ -53,7 +53,8 @@
       gap: 5px;
     }
 
-    .mode-container label, .mode-container input {
+    .mode-container label,
+    .mode-container input {
       margin: 0 7px;
       cursor: pointer;
     }
@@ -63,6 +64,10 @@
       margin-top: 10px;
       border-radius: 10px;
       border-color: gray;
+    }
+
+    #cancel {
+      visibility: visible;
     }
   </style>
 </head>
@@ -83,7 +88,7 @@
         <input type="radio" name="mode" value="5" />5 × 5
       </label>
     </div>
-    <button onclick="createGame()">RESET</button>
+    <button onclick="createGame()">SHUFFLE</button>
     <button id="cancel" onclick="cancelStep()" disabled>CANCEL</button>
   </footer>
 
@@ -98,6 +103,7 @@
     let blocks4 = []
     let isMoving = false
     let isCanceling = false
+    let started = false
     let matrix = []
     let blocks = []
     let seconds = 0
@@ -119,16 +125,16 @@
 
     function addEvents() {
       const keyMap = { ArrowUp: 2, ArrowRight: 3, ArrowDown: 0, ArrowLeft: 1 }
-      window.addEventListener('keydown', (e) => {
+      window.onkeydown = (e) => {
         const bName = blocks4[keyMap[e.key]]
         if (bName) $('.' + bName).click()
-      })
+      }
 
-      $('.mode-container').addEventListener('change', (e) => {
+      $('.mode-container').onchange = (e) => {
         SIZE = +e.target.value;
         localStorage.setItem('SIZE', SIZE)
         createGame()
-      })
+      }
     }
 
     function createGame() {
@@ -142,11 +148,7 @@
       function resetTimer() {
         clearInterval(timer)
         seconds = 0
-        $('#timer').innerText = seconds + ' s'
-        timer = setInterval(() => {
-          seconds++
-          $('#timer').innerText = seconds + ' s'
-        }, 1000)
+        $('#timer').innerText = '0 s'
       }
 
       function generateRandom() {
@@ -175,6 +177,7 @@
 
       resetTimer()
       lastSteps.length = 0
+      started = false
       $('#cancel').disabled = true
 
       container.innerHTML = ''
@@ -187,8 +190,8 @@
       calc()
 
       blocks.forEach(block => {
-        block.addEventListener('click', move)
-        block.addEventListener('dragend', move)
+        block.onclick = move
+        block.ondragend = move
       })
     }
 
@@ -225,11 +228,19 @@
 
       isMoving = true
       const blockName = 'b' + e.srcElement.innerHTML
+      steps++
       if (!isCanceling) {
         lastSteps.push(blockName)
         $('#cancel').disabled = false
       }
-      steps++
+
+      if (!started) {
+        timer = setInterval(() => {
+          $('#timer').innerText = ++seconds + ' s'
+        }, 1000)
+        started = true
+      }
+
       $('#steps').innerHTML = 'Steps count: ' + steps
 
       let [y, x] = getPos(blockName);
