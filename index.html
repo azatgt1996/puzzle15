@@ -151,28 +151,50 @@
         $('#timer').innerText = '0 s'
       }
 
-      function generateRandom() {
-        const arr = ['.'], res = []
-        while (arr.length !== SIZE ** 2) {
-          const random = 'b' + (~~(Math.random() * (SIZE ** 2 - 1)) + 1)
-          if (!arr.includes(random)) arr.push(random)
-        }
-
+      function generateSolved() {
         let cnt = 1
-        solved = []
+        const solved = []
         for (let i = 0; i < SIZE; i++) {
-          const temp = [], tmp = []
+          const tmp = []
           for (let j = 0; j < SIZE; j++) {
-            temp.push(arr.pop())
             tmp.push('b' + cnt)
             cnt++
           }
           solved.push(tmp)
-          res.push(temp)
         }
         solved[SIZE - 1][SIZE - 1] = '.'
+        return solved
+      }
 
-        return res
+      function generateRandom() {
+        const puzzle = generateSolved()
+
+        for (let i = 0; i < 1000; i++) {
+          const moves = [];
+          const emptyTile = { row: -1, col: -1 };
+
+          for (let row = 0; row < SIZE; row++) {
+            for (let col = 0; col < SIZE; col++) {
+              if (puzzle[row][col] === '.') {
+                emptyTile.row = row;
+                emptyTile.col = col;
+                break;
+              }
+            }
+            if (emptyTile.row !== -1) break;
+          }
+
+          if (emptyTile.row > 0) moves.push({ row: emptyTile.row - 1, col: emptyTile.col });
+          if (emptyTile.row < (SIZE - 1)) moves.push({ row: emptyTile.row + 1, col: emptyTile.col });
+          if (emptyTile.col > 0) moves.push({ row: emptyTile.row, col: emptyTile.col - 1 });
+          if (emptyTile.col < (SIZE - 1)) moves.push({ row: emptyTile.row, col: emptyTile.col + 1 });
+
+          const randomMove = moves[Math.floor(Math.random() * moves.length)];
+          puzzle[emptyTile.row][emptyTile.col] = puzzle[randomMove.row][randomMove.col];
+          puzzle[randomMove.row][randomMove.col] = '.';
+        }
+
+        return puzzle;
       }
 
       resetTimer()
@@ -184,6 +206,7 @@
       steps = 0
       $('#steps').innerHTML = 'Steps count: ' + steps
       matrix = generateRandom()
+      solved = generateSolved()
 
       createBlocks()
       blocks = $$('.block')
@@ -251,7 +274,7 @@
       matrix[y][x] = '.';
       calc()
       if (JSON.stringify(matrix) === JSON.stringify(solved))
-        setTimeout(() => alert('Solved :)'), 1000)
+        setTimeout(() => alert('Solved!'), 500)
       isMoving = false
       isCanceling = false
     }
