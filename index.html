@@ -22,22 +22,28 @@
     }
 
     .block {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       border: 2px solid skyblue;
       border-radius: 20px;
       width: 100px;
       height: 100px;
-      text-align: center;
-      align-content: center;
       font-size: 50px;
       color: lightgray;
       cursor: pointer;
     }
 
-    .block:hover {
-      background-color: #fafafa;
+    @media screen and (width < 1000px) {
+      .block {
+        border-radius: 10px;
+        width: 58px;
+        height: 58px;
+        font-size: 36px;
+      }
     }
 
-    #steps,
+    #moves,
     #timer {
       text-align: center;
       color: grey;
@@ -65,15 +71,11 @@
       border-radius: 10px;
       border-color: gray;
     }
-
-    #cancel {
-      visibility: visible;
-    }
   </style>
 </head>
 
 <body>
-  <h1 id="steps">Steps count: 0</h1>
+  <h1 id="moves">Moves: 0</h1>
   <h4 id="timer">0 s</h4>
   <div class="container"></div>
   <footer>
@@ -88,8 +90,8 @@
         <input type="radio" name="mode" value="5" />5 × 5
       </label>
     </div>
-    <button onclick="createGame()">SHUFFLE</button>
-    <button id="cancel" onclick="cancelStep()" disabled>CANCEL</button>
+    <button onclick="createGame()">NEW GAME</button>
+    <button id="cancel" onclick="cancelMove()" disabled>CANCEL</button>
   </footer>
 
   <script>
@@ -99,7 +101,7 @@
     const container = $('.container')
     let SIZE = localStorage.getItem('SIZE') ?? 4
     $(`.mode-container input[value="${SIZE}"]`).checked = true
-    let steps = 0
+    let moves = 0
     let blocks4 = []
     let isMoving = false
     let isCanceling = false
@@ -109,18 +111,26 @@
     let seconds = 0
     let timer
     let solved = []
-    const lastSteps = []
+    const lastMoves = []
 
     createGame()
     addEvents()
 
 
-    function cancelStep() {
-      const lastStep = lastSteps.pop()
-      if (lastSteps.length === 0) $('#cancel').disabled = true
-      steps -= 2
+    function cancelMove() {
+      const lastMove = lastMoves.pop()
+      if (lastMoves.length === 0) $('#cancel').disabled = true
+      moves -= 2
       isCanceling = true
-      $('.' + lastStep).click()
+      $('.' + lastMove).click()
+    }
+
+    function resetTimer() {
+      clearInterval(timer)
+      seconds = 0
+      $('#timer').innerText = '0 s'
+      $('#moves').innerHTML = 'Moves: 0'
+      $('#cancel').disabled = true
     }
 
     function addEvents() {
@@ -139,16 +149,11 @@
 
     function createGame() {
       function createBlocks() {
+        container.innerHTML = ''
         let blocksHTML = ''
         for (let i = 1; i < SIZE ** 2; i++)
           blocksHTML += `<div class="block b${i}" style="grid-area: b${i}">${i}</div>`
         container.innerHTML = blocksHTML
-      }
-
-      function resetTimer() {
-        clearInterval(timer)
-        seconds = 0
-        $('#timer').innerText = '0 s'
       }
 
       function generateSolved() {
@@ -198,13 +203,10 @@
       }
 
       resetTimer()
-      lastSteps.length = 0
+      lastMoves.length = 0
       started = false
-      $('#cancel').disabled = true
 
-      container.innerHTML = ''
-      steps = 0
-      $('#steps').innerHTML = 'Steps count: ' + steps
+      moves = 0
       matrix = generateRandom()
       solved = generateSolved()
 
@@ -214,7 +216,6 @@
 
       blocks.forEach(block => {
         block.onclick = move
-        block.ondragend = move
       })
     }
 
@@ -226,34 +227,30 @@
 
     function calc() {
       blocks.forEach(block => {
-        block.classList.remove('draggable')
-        block.setAttribute('draggable', false)
+        block.classList.remove('movable')
       })
       container.style.gridTemplateAreas = '"' + matrix.map(r => r.join(' ')).join('" "') + '"'
 
-      const [y, x] = getPos('.') // find empty position
+      const [y, x] = getPos('.')
 
-      // get neighbors
       const m = matrix
       blocks4 = [m[y - 1]?.[x], m[y]?.[x + 1], m[y + 1]?.[x], m[y]?.[x - 1]]
       const neighbors = blocks4.filter(Boolean)
 
-      // set draggable class
       neighbors.forEach(bNum => {
         const block = $('.' + bNum)
-        block.classList.add('draggable')
-        block.setAttribute('draggable', true)
+        block.classList.add('movable')
       })
     }
 
     function move(e) {
-      if (isMoving || !e.srcElement.classList.contains('draggable')) return
+      if (isMoving || !e.srcElement.classList.contains('movable')) return
 
       isMoving = true
       const blockName = 'b' + e.srcElement.innerHTML
-      steps++
+      moves++
       if (!isCanceling) {
-        lastSteps.push(blockName)
+        lastMoves.push(blockName)
         $('#cancel').disabled = false
       }
 
@@ -264,7 +261,7 @@
         started = true
       }
 
-      $('#steps').innerHTML = 'Steps count: ' + steps
+      $('#moves').innerHTML = 'Moves: ' + moves
 
       let [y, x] = getPos(blockName);
       matrix[y][x] = 'temp';
@@ -274,7 +271,10 @@
       matrix[y][x] = '.';
       calc()
       if (JSON.stringify(matrix) === JSON.stringify(solved))
-        setTimeout(() => alert('Solved!'), 500)
+        setTimeout(() => {
+          alert(`Solved in ${seconds}s! Moves: ${moves}.`)
+          resetTimer()
+        }, 500)
       isMoving = false
       isCanceling = false
     }
