@@ -87,15 +87,38 @@
       border-color: gray;
     }
 
+    .options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .sound-icon {
+      width: 26px;
+      stroke: var(--main-color);
+      cursor: pointer;
+      display: none;
+    }
+
+    #theme-icon {
+      width: 22px;
+      height: 22px;
+      stroke: var(--main-color);
+      cursor: pointer;
+    }
+
     .repo-link {
       text-decoration: none;
       color: var(--main-color);
-      margin-top: 20px;
     }
 
     .repo-link svg {
       width: 20px;
       fill: var(--main-color);
+      padding: 3px;
+      vertical-align: bottom;
     }
   </style>
 </head>
@@ -119,13 +142,47 @@
       </div>
       <button onclick="createGame()">NEW GAME</button>
       <button id="cancel" onclick="cancelMove()" disabled>CANCEL</button>
+
+      <div class="options">
+        <svg class="sound-icon" id="sound-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M3.15838 13.9306C2.44537 12.7423 2.44537 11.2577 3.15838 10.0694V10.0694C3.37596 9.70674 3.73641 9.45272 4.1511 9.36978L5.84413 9.03117C5.94499 9.011 6.03591 8.95691 6.10176 8.87788L8.17085 6.39498C9.3534 4.97592 9.94468 4.26638 10.4723 4.45742C11 4.64846 11 5.57207 11 7.41928L11 16.5807C11 18.4279 11 19.3515 10.4723 19.5426C9.94468 19.7336 9.3534 19.0241 8.17085 17.605L6.10176 15.1221C6.03591 15.0431 5.94499 14.989 5.84413 14.9688L4.1511 14.6302C3.73641 14.5473 3.37596 14.2933 3.15838 13.9306V13.9306Z"
+            stroke-width="2" />
+          <path
+            d="M15.5355 8.46447C16.4684 9.39732 16.9948 10.6611 17 11.9803C17.0052 13.2996 16.4888 14.5674 15.5633 15.5076"
+            stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M19.6569 6.34314C21.1494 7.83572 21.9916 9.85769 21.9999 11.9685C22.0083 14.0793 21.182 16.1078 19.7012 17.6121"
+            stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <svg class="sound-icon" id="sound-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M3.15838 13.9306C2.44537 12.7423 2.44537 11.2577 3.15838 10.0694V10.0694C3.37596 9.70674 3.73641 9.45272 4.1511 9.36978L5.84413 9.03117C5.94499 9.011 6.03591 8.95691 6.10176 8.87788L8.17085 6.39498C9.3534 4.97592 9.94468 4.26638 10.4723 4.45742C11 4.64846 11 5.57207 11 7.41928L11 16.5807C11 18.4279 11 19.3515 10.4723 19.5426C9.94468 19.7336 9.3534 19.0241 8.17085 17.605L6.10176 15.1221C6.03591 15.0431 5.94499 14.989 5.84413 14.9688L4.1511 14.6302C3.73641 14.5473 3.37596 14.2933 3.15838 13.9306V13.9306Z"
+            stroke-width="2" />
+          <path d="M15 15L21 9" stroke-width="2" stroke-linecap="round" />
+          <path d="M21 15L15 9" stroke-width="2" stroke-linecap="round" />
+        </svg>
+        <svg id="theme-icon" onclick="setMainColor()" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"
+          fill="none">
+          <g clip-path="url(#a)">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="12"
+              d="M96 22v30m24-30v36m-42 76v24a11.998 11.998 0 0 0 12 12h12c3.183 0 6.235-1.264 8.485-3.515A11.996 11.996 0 0 0 114 158v-24M48 96v20a11.998 11.998 0 0 0 12 12h72c3.183 0 6.235-1.264 8.485-3.515A11.996 11.996 0 0 0 144 116V96.149L48 96Zm0 0V46a24 24 0 0 1 24-24h72v74H48Z" />
+          </g>
+          <defs>
+            <clipPath>
+              <path fill="#ffffff" d="M0 0h192v192H0z" />
+            </clipPath>
+          </defs>
+        </svg>
+        <a class="repo-link" href="https://github.com/azatgt1996/puzzle15" target="_blank">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12">
+            </path>
+          </svg>
+        </a>
+      </div>
     </footer>
-    <a class="repo-link" href="https://github.com/azatgt1996/puzzle15" target="_blank">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path>
-      </svg>
-      Github repo
-    </a>
   </main>
 
 
@@ -147,10 +204,36 @@
     let timer
     let solved = []
     const lastMoves = []
+    const audio = new Audio('click.wav')
+    let soundOn
+    const themeColors = ['deeppink', 'cornflowerblue', 'orange', 'limegreen']
+
+    initSoundBtn(localStorage.getItem('soundOn') === 'false' ? false : true)
+
+    let mainColor = localStorage.getItem('mainColor') ?? 'cornflowerblue'
+    document.documentElement.style.setProperty('--main-color', mainColor)
 
     createGame()
     addEvents()
 
+    function setMainColor() {
+      const idx = themeColors.findIndex(c => c === mainColor)
+      mainColor = themeColors[idx + 1] ?? themeColors[0]
+      document.documentElement.style.setProperty('--main-color', mainColor)
+      localStorage.setItem('mainColor', mainColor)
+    }
+
+    function initSoundBtn(_soundOn) {
+      soundOn = _soundOn
+      if (soundOn) {
+        $('#sound-on').style.display = 'block'
+        $('#sound-off').style.display = 'none'
+      } else {
+        $('#sound-on').style.display = 'none'
+        $('#sound-off').style.display = 'block'
+      }
+      localStorage.setItem('soundOn', soundOn)
+    }
 
     function cancelMove() {
       const lastMove = lastMoves.pop()
@@ -180,6 +263,9 @@
         localStorage.setItem('SIZE', SIZE)
         createGame()
       }
+
+      $('#sound-on').onclick = () => initSoundBtn(false)
+      $('#sound-off').onclick = () => initSoundBtn(true)
     }
 
     function createGame() {
@@ -286,6 +372,11 @@
       const blockName = 'b' + e.srcElement.innerHTML
       moves++
       if (!isCanceling) {
+        if (soundOn) {
+          audio.pause()
+          audio.currentTime = 0
+          audio.play()
+        }
         lastMoves.push(blockName)
         $('#cancel').disabled = false
       }
